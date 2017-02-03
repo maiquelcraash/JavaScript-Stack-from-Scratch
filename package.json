@@ -1,0 +1,12 @@
+{
+  "name": "JavaScript-stack-from-Scratch",
+  "version": "1.0.0",
+  "description": "A JS initial Stack of technogies from 2016",
+  "main": "index.js",
+  "repository": {},
+  "author": "Maiquel Ludwig",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ."
+  }
+}
