@@ -8,5 +8,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node ."
+  },
+  "dependencies": {
+    "color": "^1.0.3"
   }
 }
