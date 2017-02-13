@@ -5,8 +5,8 @@
 const Color = require('color');									//require the color library (added by yarn). https://github.com/qix-/color
 const str = "ES6";
 
-const Dog = require('./dog');									//import the Dog class (old mode)
-import NewDog from './newDog';									//import the newDog class (ES6 mode)
+const Dog = require('../shared/dog');									//import the Dog class (old mode)
+import NewDog from '../shared/newDog';									//import the newDog class (ES6 mode)
 
 
 console.log("Hello World!");

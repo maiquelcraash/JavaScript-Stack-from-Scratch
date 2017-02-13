@@ -8,30 +8,41 @@
 	const gulp = require('gulp');
 	const babel = require('gulp-babel');
 	const del = require('del');
-	const exec = require('child_process').exec;
 	const eslint = require('gulp-eslint');
+	const webpack = require('webpack-stream');
+	const webpackConfig = require('./webpack.config.babel');
 
-	/* Regists all paths */
+	/* Regists all paths. The .js?(x) is just a pattern to match .js or .jsx files. */
 	const paths = {
-		allSrcJs: "src/**/*.js",
-		gulpfile: 'gulpfile.js',
-		libDir: "lib"
+		allSrcJs: 'src/**/*.js?(x)',
+		serverSrcJs: 'src/server/**/*.js?(x)',
+		sharedSrcJs: 'src/shared/**/*.js?(x)',
+		clientEntryPoint: 'src/client/app.js',
+		clientBundle: 'dist/client-bundle.js?(.map)',
+		gulpFile: 'gulpfile.js',
+		webpackFile: 'webpack.config.babel.js',
+		libDir: 'lib',
+		distDir: 'dist',
 	};
 
 	/* Check and formats the source files */
 	gulp.task('lint', () => {
 		return gulp.src([
 			paths.allSrcJs,
-			paths.gulpfile
+			paths.gulpfile,
+			paths.webpackFile
 		])
 			.pipe(eslint())
 			.pipe(eslint.format())
 			.pipe(eslint.failAfterError());
 	});
 
-	/* Cleans the lib directory */
+	/* Cleans the lib directory and webpack bundles*/
 	gulp.task('clean', () => {
-		return del(paths.libDir);
+		return del([
+			paths.libDir,
+			paths.clientBundle
+		]);
 	});
 
 	/* Calls lint task, then clean task, then convert to ES5 whit babel, then move to the lib directory */
@@ -41,12 +52,11 @@
 			.pipe(gulp.dest(paths.libDir));
 	});
 
-	/* After build task, exec in the shell "$ node lib". It looks for the index.js file and logs the stdout. */
-	gulp.task('main', ['build'], (callback) => {
-		exec(`node ${paths.libDir}`, (error, stdout) => {
-			console.log(stdout);
-			return callback(error);
-		})
+	/* After clean task, executes the webpack task with the configuration expecified */
+	gulp.task('main', ['clean', 'build'], () => {
+		gulp.src(paths.clientEntryPoint)
+			.pipe(webpack(webpackConfig))
+			.pipe(gulp.dest(paths.distDir))
 	});
 
 	/* watch runs the main task when filesystem changes happen in the specified files. */
